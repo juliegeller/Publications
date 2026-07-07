@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Julie Geller — Index of Published Work</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Source+Serif+4:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<style>
+  :root{
+    --black: #0a0a08;
+    --black-2: #121110;
+    --ink: #ece5d3;
+    --ink-dim: #948c78;
+    --gold: #c9a227;
+    --gold-bright: #e0bd52;
+    --gold-line: rgba(201,162,39,.28);
+    --gold-line-soft: rgba(201,162,39,.14);
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:var(--black);
+    color:var(--ink);
+    font-family:'Source Serif 4', serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--gold); color:var(--black); }
+  a{ color:inherit; }
+  a:focus-visible, input:focus-visible, button:focus-visible{
+    outline:1px solid var(--gold);
+    outline-offset:4px;
+  }
+
+  .wrap{ max-width:920px; margin:0 auto; padding:0 28px; }
+
+  /* ---------- HERO ---------- */
+  header.hero{
+    padding:96px 28px 56px;
+    max-width:920px;
+    margin:0 auto;
+  }
+  .eyebrow{
+    font-family:'Cormorant Garamond', serif;
+    font-variant-caps:all-small-caps;
+    letter-spacing:.22em;
+    font-size:15px;
+    color:var(--gold);
+    display:block;
+    margin-bottom:22px;
+  }
+  h1.title{
+    font-family:'Fraunces', serif;
+    font-optical-sizing:auto;
+    font-weight:500;
+    font-size:clamp(40px, 6.4vw, 72px);
+    line-height:1.06;
+    letter-spacing:-.01em;
+    color:var(--ink);
+    margin:0 0 20px;
+  }
+  h1.title .name{
+    font-style:italic;
+    font-weight:500;
+    color:var(--gold-bright);
+  }
+  p.subtitle{
+    font-family:'Source Serif 4', serif;
+    font-style:italic;
+    font-size:19px;
+    line-height:1.6;
+    color:var(--ink-dim);
+    max-width:52ch;
+    margin:0 0 34px;
+  }
+  .colophon{
+    font-family:'Cormorant Garamond', serif;
+    font-variant-caps:all-small-caps;
+    letter-spacing:.14em;
+    font-size:16px;
+    color:var(--ink-dim);
+    padding-top:22px;
+    border-top:1px solid var(--gold-line);
+  }
+  .colophon strong{ color:var(--gold); font-style:normal; }
+  .colophon .sep{ margin:0 10px; color:var(--gold-line); }
+
+  /* ---------- CONTROLS ---------- */
+  .controls{
+    max-width:920px;
+    margin:0 auto;
+    padding:0 28px 8px;
+    display:flex;
+    align-items:baseline;
+    gap:34px;
+    flex-wrap:wrap;
+  }
+  .search-field{
+    position:relative;
+    flex:1;
+    min-width:200px;
+  }
+  .search-field input{
+    width:100%;
+    background:transparent;
+    border:none;
+    border-bottom:1px solid var(--gold-line);
+    color:var(--ink);
+    font-family:'Source Serif 4', serif;
+    font-style:italic;
+    font-size:17px;
+    padding:8px 2px 10px;
+    transition:border-color .2s ease;
+  }
+  .search-field input::placeholder{ color:var(--ink-dim); }
+  .search-field input:focus{ border-color:var(--gold); outline:none; }
+
+  .type-toggle{
+    display:flex;
+    gap:22px;
+    font-family:'Cormorant Garamond', serif;
+    font-variant-caps:all-small-caps;
+    letter-spacing:.12em;
+    font-size:17px;
+  }
+  .type-toggle button{
+    background:none;
+    border:none;
+    color:var(--ink-dim);
+    cursor:pointer;
+    padding:8px 0 10px;
+    border-bottom:1px solid transparent;
+    font:inherit;
+    font-variant-caps:all-small-caps;
+    letter-spacing:.12em;
+  }
+  .type-toggle button.active{
+    color:var(--gold-bright);
+    border-bottom-color:var(--gold);
+  }
+  .type-toggle button:hover{ color:var(--gold-bright); }
+
+  select#outletFilter{
+    background:transparent;
+    border:none;
+    border-bottom:1px solid var(--gold-line);
+    color:var(--ink-dim);
+    font-family:'Cormorant Garamond', serif;
+    font-variant-caps:all-small-caps;
+    letter-spacing:.1em;
+    font-size:16px;
+    padding:8px 4px 10px;
+    cursor:pointer;
+  }
+  select#outletFilter option{ background:var(--black-2); color:var(--ink); }
+
+  /* ---------- YEAR MARK ---------- */
+  .year-mark{
+    max-width:920px;
+    margin:52px auto 6px;
+    padding:0 28px;
+    display:flex;
+    align-items:baseline;
+    gap:16px;
+  }
+  .year-mark:first-of-type{ margin-top:40px; }
+  .year-mark .num{
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    font-weight:500;
+    font-size:22px;
+    color:var(--gold);
+  }
+  .year-mark .rule{
+    flex:1;
+    height:1px;
+    background:var(--gold-line-soft);
+  }
+
+  /* ---------- LIST ---------- */
+  .list{ max-width:920px; margin:0 auto; padding:0 28px 40px; }
+
+  .entry{
+    display:grid;
+    grid-template-columns:68px 1fr auto;
+    gap:26px;
+    align-items:start;
+    padding:26px 0;
+    border-top:1px solid var(--gold-line-soft);
+    transition:background .15s ease;
+  }
+  .entry:hover{ background:rgba(201,162,39,.035); }
+
+  .entry-index{
+    font-family:'Fraunces', serif;
+    font-style:italic;
+    font-weight:600;
+    font-size:30px;
+    line-height:1;
+    color:transparent;
+    -webkit-text-stroke:1px var(--gold);
+    opacity:.6;
+    padding-top:4px;
+  }
+
+  .entry-body h3{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:clamp(20px, 2.4vw, 25px);
+    line-height:1.32;
+    margin:0 0 9px;
+  }
+  .entry-body h3 a{
+    text-decoration:none;
+    color:var(--ink);
+    background-image:linear-gradient(var(--gold), var(--gold));
+    background-position:0 100%;
+    background-repeat:no-repeat;
+    background-size:0 1px;
+    transition:background-size .25s ease, color .15s ease;
+  }
+  .entry-body h3 a:hover{
+    color:var(--gold-bright);
+    background-size:100% 1px;
+  }
+  .entry-meta{
+    font-family:'Cormorant Garamond', serif;
+    font-variant-caps:all-small-caps;
+    letter-spacing:.1em;
+    font-size:16px;
+    color:var(--gold);
+    margin-bottom:10px;
+  }
+  .entry-meta .dot{ color:var(--gold-line); margin:0 8px; }
+  .entry-meta .topic{ color:var(--ink-dim); }
+  .entry-note{
+    font-family:'Source Serif 4', serif;
+    font-style:italic;
+    font-size:15.5px;
+    line-height:1.6;
+    color:var(--ink-dim);
+    margin:0;
+    max-width:56ch;
+  }
+
+  .entry-side{
+    text-align:right;
+    white-space:nowrap;
+    padding-top:4px;
+  }
+  .entry-date{
+    font-family:'Cormorant Garamond', serif;
+    font-variant-caps:all-small-caps;
+    letter-spacing:.08em;
+    font-size:16px;
+    color:var(--ink-dim);
+    display:block;
+    margin-bottom:8px;
+  }
+  .entry-type{
+    font-family:'Cormorant Garamond', serif;
+    font-variant-caps:all-small-caps;
+    letter-spacing:.14em;
+    font-size:14px;
+    display:inline-block;
+    padding:2px 0;
+    border-top:1px solid currentColor;
+    border-bottom:1px solid currentColor;
+  }
+  .entry-type.media{ color:var(--gold); }
+  .entry-type.research{ color:#8fae9e; }
+
+  .empty{
+    text-align:center;
+    padding:90px 20px;
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size:19px;
+    color:var(--ink-dim);
+  }
+  .empty code{ color:var(--gold); font-style:normal; }
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    max-width:920px;
+    margin:40px auto 0;
+    padding:30px 28px 90px;
+    border-top:1px solid var(--gold-line);
+    font-family:'Cormorant Garamond', serif;
+    font-size:16px;
+    line-height:1.7;
+    color:var(--ink-dim);
+  }
+  footer em{ color:var(--gold); font-style:italic; }
+  footer code{
+    font-family:'Source Serif 4', serif;
+    background:rgba(201,162,39,.1);
+    padding:1px 6px;
+    color:var(--ink);
+  }
+
+  @media (max-width:620px){
+    header.hero{ padding:64px 22px 40px; }
+    .entry{ grid-template-columns:40px 1fr; }
+    .entry-index{ font-size:22px; }
+    .entry-side{ grid-column:1 / -1; text-align:left; display:flex; gap:16px; align-items:center; padding-top:2px; }
+    .entry-date{ margin-bottom:0; }
+    .controls{ gap:20px; }
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .entry, .entry-body h3 a{ transition:none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <span class="eyebrow">Complete Record</span>
+  <h1 class="title">The published work<br>of <span class="name">Julie Geller</span></h1>
+  <p class="subtitle">Press commentary and Info-Tech Research Group publications, filed chronologically.</p>
+  <div class="colophon" id="colophon"></div>
+</header>
+
+<div class="controls">
+  <div class="search-field">
+    <input id="q" type="text" placeholder="Search by title, outlet, or topic…">
+  </div>
+  <div class="type-toggle" id="typeToggle">
+    <button data-type="" class="active">All</button>
+    <button data-type="Media">Media</button>
+    <button data-type="Research">Research</button>
+  </div>
+  <select id="outletFilter">
+    <option value="">All outlets</option>
+  </select>
+</div>
+
+<div class="list" id="results"></div>
+
+<footer>
+  To add an entry, open <code>data.csv</code>, add a row with the same columns, and save. This page reads the file directly — <em>no code to touch</em>.
+</footer>
+
+<script>
+async function init(){
+  const resultsEl = document.getElementById('results');
+  const colophon = document.getElementById('colophon');
+  const typeToggle = document.getElementById('typeToggle');
+  const outletSel = document.getElementById('outletFilter');
+  const qInput = document.getElementById('q');
+
+  let rows = [];
+  try{
+    const res = await fetch('data.csv', { cache: 'no-store' });
+    if(!res.ok) throw new Error('fetch failed');
+    const text = await res.text();
+    const parsed = Papa.parse(text, { header:true, skipEmptyLines:true });
+    rows = parsed.data.filter(r => r.title && r.title.trim());
+  }catch(e){
+    resultsEl.innerHTML = `<div class="empty">Couldn't load <code>data.csv</code>.<br>If you're opening this file directly, browsers block that for local files.<br>Run <code>python3 -m http.server</code> in this folder, or host it (Netlify, GitHub Pages) — both files need to sit in the same place.</div>`;
+    return;
+  }
+
+  rows.forEach(r=>{
+    r.type = (r.type||'').trim();
+    r.outlet = (r.outlet||'').trim();
+    r.topic = (r.topic||'').trim();
+    r.date = (r.date||'').trim();
+    r.year = r.date ? r.date.slice(0,4) : '—';
+  });
+
+  // chronological order gives each entry a stable index number, oldest = 01
+  const chronological = [...rows].sort((a,b)=>a.date.localeCompare(b.date));
+  const indexMap = new Map(chronological.map((r,i)=>[r, i+1]));
+
+  [...new Set(rows.map(r=>r.outlet))].sort().forEach(o=>{
+    const opt = document.createElement('option'); opt.value=o; opt.textContent=o; outletSel.appendChild(opt);
+  });
+
+  const mediaCount = rows.filter(r=>r.type.toLowerCase()==='media').length;
+  const researchCount = rows.filter(r=>r.type.toLowerCase()==='research').length;
+  const outletCount = new Set(rows.map(r=>r.outlet)).size;
+  const years = rows.map(r=>r.year).filter(y=>y!=='—').sort();
+  const span = years.length ? `${years[0]}–${years[years.length-1]}` : '—';
+
+  colophon.innerHTML = `<strong>${rows.length}</strong> entries<span class="sep">·</span><strong>${mediaCount}</strong> press citations<span class="sep">·</span><strong>${researchCount}</strong> research publications<span class="sep">·</span><strong>${outletCount}</strong> outlets<span class="sep">·</span><strong>${span}</strong>`;
+
+  let activeType = '';
+
+  function escapeHtml(str){
+    if(!str) return '';
+    return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  function render(){
+    const q = qInput.value.toLowerCase().trim();
+    const outlet = outletSel.value;
+
+    const filtered = rows.filter(r=>{
+      const matchesQ = !q || [r.title, r.outlet, r.topic, r.note].join(' ').toLowerCase().includes(q);
+      const matchesType = !activeType || r.type === activeType;
+      const matchesOutlet = !outlet || r.outlet === outlet;
+      return matchesQ && matchesType && matchesOutlet;
+    }).sort((a,b)=> b.date.localeCompare(a.date)); // newest first
+
+    if(!filtered.length){
+      resultsEl.innerHTML = `<div class="empty">No entries match that search.</div>`;
+      return;
+    }
+
+    let html = '';
+    let currentYear = null;
+    filtered.forEach(r=>{
+      if(r.year !== currentYear){
+        currentYear = r.year;
+        html += `<div class="year-mark"><span class="num">${currentYear}</span><span class="rule"></span></div>`;
+      }
+      const d = r.date ? new Date(r.date+'T00:00:00') : null;
+      const dateLabel = d ? d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }) : '';
+      const typeClass = r.type.toLowerCase()==='media' ? 'media' : 'research';
+      const num = String(indexMap.get(r)).padStart(2,'0');
+
+      html += `
+        <article class="entry">
+          <div class="entry-index">${num}</div>
+          <div class="entry-body">
+            <div class="entry-meta">${escapeHtml(r.outlet)}<span class="dot">&middot;</span><span class="topic">${escapeHtml(r.topic)}</span></div>
+            <h3><a href="${escapeHtml(r.url)}" target="_blank" rel="noopener">${escapeHtml(r.title)}</a></h3>
+            <p class="entry-note">${escapeHtml(r.note)}</p>
+          </div>
+          <div class="entry-side">
+            <span class="entry-date">${dateLabel}</span>
+            <span class="entry-type ${typeClass}">${escapeHtml(r.type)}</span>
+          </div>
+        </article>`;
+    });
+    resultsEl.innerHTML = html;
+  }
+
+  typeToggle.addEventListener('click', (e)=>{
+    const btn = e.target.closest('button');
+    if(!btn) return;
+    typeToggle.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    activeType = btn.dataset.type;
+    render();
+  });
+  qInput.addEventListener('input', render);
+  outletSel.addEventListener('change', render);
+
+  render();
+}
+init();
+</script>
+
+</body>
+</html>
