@@ -271,6 +271,24 @@
   .entry-type.media{ color:var(--gold); }
   .entry-type.research{ color:#8fae9e; }
 
+  .entry-download{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-family:'Cormorant Garamond', serif;
+    font-variant-caps:all-small-caps;
+    letter-spacing:.1em;
+    font-size:15px;
+    color:var(--gold-bright);
+    text-decoration:none;
+    margin-top:12px;
+    padding-bottom:1px;
+    border-bottom:1px solid var(--gold-line);
+    transition:border-color .15s ease, color .15s ease;
+  }
+  .entry-download:hover{ color:var(--ink); border-color:var(--gold-bright); }
+  .entry-download svg{ width:11px; height:11px; flex-shrink:0; }
+
   .empty{
     text-align:center;
     padding:90px 20px;
@@ -340,7 +358,7 @@
 <div class="list" id="results"></div>
 
 <footer>
-  To add an entry, open <code>data.csv</code>, add a row with the same columns, and save. This page reads the file directly — <em>no code to touch</em>.
+  To add an entry, open <code>data.csv</code>, add a row with the same columns, and save. Fill in <code>download</code> with a file link (a PDF, a deck) to show a download link on that entry — leave it blank otherwise. This page reads the file directly — <em>no code to touch</em>.
 </footer>
 
 <script>
@@ -421,6 +439,10 @@ async function init(){
       const dateLabel = d ? d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }) : '';
       const typeClass = r.type.toLowerCase()==='media' ? 'media' : 'research';
       const num = String(indexMap.get(r)).padStart(2,'0');
+      const downloadUrl = (r.download||'').trim();
+      const downloadLink = downloadUrl
+        ? `<a class="entry-download" href="${escapeHtml(downloadUrl)}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>Download</a>`
+        : '';
 
       html += `
         <article class="entry">
@@ -429,6 +451,7 @@ async function init(){
             <div class="entry-meta">${escapeHtml(r.outlet)}<span class="dot">&middot;</span><span class="topic">${escapeHtml(r.topic)}</span></div>
             <h3><a href="${escapeHtml(r.url)}" target="_blank" rel="noopener">${escapeHtml(r.title)}</a></h3>
             <p class="entry-note">${escapeHtml(r.note)}</p>
+            ${downloadLink}
           </div>
           <div class="entry-side">
             <span class="entry-date">${dateLabel}</span>
