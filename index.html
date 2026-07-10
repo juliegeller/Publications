@@ -3,480 +3,600 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Julie Geller — Index of Published Work</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Source+Serif+4:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<title>The Geller Index</title>
 <style>
-  :root{
-    --black: #0a0a08;
-    --black-2: #121110;
-    --ink: #ece5d3;
-    --ink-dim: #948c78;
-    --gold: #c9a227;
-    --gold-bright: #e0bd52;
-    --gold-line: rgba(201,162,39,.28);
-    --gold-line-soft: rgba(201,162,39,.14);
-  }
-  *{ box-sizing:border-box; }
-  html,body{ margin:0; padding:0; }
-  body{
-    background:var(--black);
-    color:var(--ink);
-    font-family:'Source Serif 4', serif;
-    -webkit-font-smoothing:antialiased;
-  }
-  ::selection{ background:var(--gold); color:var(--black); }
-  a{ color:inherit; }
-  a:focus-visible, input:focus-visible, button:focus-visible{
-    outline:1px solid var(--gold);
-    outline-offset:4px;
-  }
+/* ============================================================
+   THE GELLER INDEX — Swiss editorial system.
+   Type scale built on φ (1.618). Content driven by CSV.
+   Edit settings.csv and data.csv — never this file.
+   ============================================================ */
 
-  .wrap{ max-width:920px; margin:0 auto; padding:0 28px; }
+:root{
+  /* Golden-ratio modular scale, base 1rem */
+  --f0: 1rem;                 /* 16 */
+  --f1: 1.618rem;             /* 26 */
+  --f2: 2.618rem;             /* 42 */
+  --f3: 4.236rem;             /* 68 */
+  --f4: 6.854rem;             /* 110 */
+  --f5: 11.089rem;            /* 177 */
+  --fneg: 0.618rem;           /* 10 */
 
-  /* ---------- HERO ---------- */
-  header.hero{
-    padding:96px 28px 56px;
-    max-width:920px;
-    margin:0 auto;
-  }
-  .eyebrow{
-    font-family:'Cormorant Garamond', serif;
-    font-variant-caps:all-small-caps;
-    letter-spacing:.22em;
-    font-size:15px;
-    color:var(--gold);
-    display:block;
-    margin-bottom:22px;
-  }
-  h1.title{
-    font-family:'Fraunces', serif;
-    font-optical-sizing:auto;
-    font-weight:500;
-    font-size:clamp(40px, 6.4vw, 72px);
-    line-height:1.06;
-    letter-spacing:-.01em;
-    color:var(--ink);
-    margin:0 0 20px;
-  }
-  h1.title .name{
-    font-style:italic;
-    font-weight:500;
-    color:var(--gold-bright);
-  }
-  p.subtitle{
-    font-family:'Source Serif 4', serif;
-    font-style:italic;
-    font-size:19px;
-    line-height:1.6;
-    color:var(--ink-dim);
-    max-width:52ch;
-    margin:0 0 34px;
-  }
-  .colophon{
-    font-family:'Cormorant Garamond', serif;
-    font-variant-caps:all-small-caps;
-    letter-spacing:.14em;
-    font-size:16px;
-    color:var(--ink-dim);
-    padding-top:22px;
-    border-top:1px solid var(--gold-line);
-  }
-  .colophon strong{ color:var(--gold); font-style:normal; }
-  .colophon .sep{ margin:0 10px; color:var(--gold-line); }
+  /* Spacing rhythm, also φ-derived */
+  --s1: 0.618rem;
+  --s2: 1rem;
+  --s3: 1.618rem;
+  --s4: 2.618rem;
+  --s5: 4.236rem;
+  --s6: 6.854rem;
+  --s7: 11.089rem;
 
-  /* ---------- CONTROLS ---------- */
-  .controls{
-    max-width:920px;
-    margin:0 auto;
-    padding:0 28px 8px;
-    display:flex;
-    align-items:baseline;
-    gap:34px;
-    flex-wrap:wrap;
-  }
-  .search-field{
-    position:relative;
-    flex:1;
-    min-width:200px;
-  }
-  .search-field input{
-    width:100%;
-    background:transparent;
-    border:none;
-    border-bottom:1px solid var(--gold-line);
-    color:var(--ink);
-    font-family:'Source Serif 4', serif;
-    font-style:italic;
-    font-size:17px;
-    padding:8px 2px 10px;
-    transition:border-color .2s ease;
-  }
-  .search-field input::placeholder{ color:var(--ink-dim); }
-  .search-field input:focus{ border-color:var(--gold); outline:none; }
+  --paper:  #f3f1ea;
+  --ink:    #101010;
+  --hi:     #e4231b;   /* overwritten by settings.csv highlight_color */
+  --grey:   #8c887e;
+  --hair:   rgba(16,16,16,0.16);
 
-  .type-toggle{
-    display:flex;
-    gap:22px;
-    font-family:'Cormorant Garamond', serif;
-    font-variant-caps:all-small-caps;
-    letter-spacing:.12em;
-    font-size:17px;
-  }
-  .type-toggle button{
-    background:none;
-    border:none;
-    color:var(--ink-dim);
-    cursor:pointer;
-    padding:8px 0 10px;
-    border-bottom:1px solid transparent;
-    font:inherit;
-    font-variant-caps:all-small-caps;
-    letter-spacing:.12em;
-  }
-  .type-toggle button.active{
-    color:var(--gold-bright);
-    border-bottom-color:var(--gold);
-  }
-  .type-toggle button:hover{ color:var(--gold-bright); }
+  --grid: 12;
+  --gutter: 1.618rem;
+  --margin: 2.618rem;
+}
 
-  select#outletFilter{
-    background:transparent;
-    border:none;
-    border-bottom:1px solid var(--gold-line);
-    color:var(--ink-dim);
-    font-family:'Cormorant Garamond', serif;
-    font-variant-caps:all-small-caps;
-    letter-spacing:.1em;
-    font-size:16px;
-    padding:8px 4px 10px;
-    cursor:pointer;
-  }
-  select#outletFilter option{ background:var(--black-2); color:var(--ink); }
+*{ margin:0; padding:0; box-sizing:border-box; }
+html{ scroll-behavior:smooth; -webkit-font-smoothing:antialiased; }
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size:16px;
+  line-height:1.618;
+  overflow-x:hidden;
+}
+::selection{ background:var(--hi); color:var(--paper); }
 
-  /* ---------- YEAR MARK ---------- */
-  .year-mark{
-    max-width:920px;
-    margin:52px auto 6px;
-    padding:0 28px;
-    display:flex;
-    align-items:baseline;
-    gap:16px;
-  }
-  .year-mark:first-of-type{ margin-top:40px; }
-  .year-mark .num{
-    font-family:'Fraunces', serif;
-    font-style:italic;
-    font-weight:500;
-    font-size:22px;
-    color:var(--gold);
-  }
-  .year-mark .rule{
-    flex:1;
-    height:1px;
-    background:var(--gold-line-soft);
-  }
+.mono{
+  font-family:"SFMono-Regular", ui-monospace, "Roboto Mono", Menlo, monospace;
+  font-size:var(--fneg);
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+}
 
-  /* ---------- LIST ---------- */
-  .list{ max-width:920px; margin:0 auto; padding:0 28px 40px; }
+/* ---------- Layout grid ---------- */
+.wrap{ padding-left:var(--margin); padding-right:var(--margin); max-width:1680px; margin:0 auto; }
+.grid{ display:grid; grid-template-columns:repeat(var(--grid),1fr); column-gap:var(--gutter); }
 
-  .entry{
-    display:grid;
-    grid-template-columns:68px 1fr auto;
-    gap:26px;
-    align-items:start;
-    padding:26px 0;
-    border-top:1px solid var(--gold-line-soft);
-    transition:background .15s ease;
-  }
-  .entry:hover{ background:rgba(201,162,39,.035); }
+/* ---------- Top bar ---------- */
+header.bar{
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  display:flex; justify-content:space-between; align-items:baseline;
+  padding:var(--s2) var(--margin);
+  mix-blend-mode:difference; color:#fff;
+}
+header.bar .brand{ font-weight:700; letter-spacing:-0.02em; font-size:var(--f0); }
+header.bar nav{ display:flex; gap:var(--s4); }
+header.bar nav a{ color:inherit; text-decoration:none; }
+header.bar nav a:hover{ color:var(--hi); }
 
-  .entry-index{
-    font-family:'Fraunces', serif;
-    font-style:italic;
-    font-weight:600;
-    font-size:30px;
-    line-height:1;
-    color:transparent;
-    -webkit-text-stroke:1px var(--gold);
-    opacity:.6;
-    padding-top:4px;
-  }
+/* ---------- Hero ---------- */
+.hero{
+  min-height:100vh;
+  display:flex; flex-direction:column; justify-content:flex-end;
+  padding-bottom:var(--s5); padding-top:var(--s7);
+  position:relative;
+}
+.hero .kicker{
+  grid-column:1 / span 12;
+  display:flex; justify-content:space-between;
+  border-top:1px solid var(--ink); padding-top:var(--s1);
+  margin-bottom:var(--s5);
+}
+.hero h1{
+  grid-column:1 / span 12;
+  font-size:var(--f5);
+  line-height:0.92;
+  letter-spacing:-0.04em;
+  font-weight:700;               /* bold, sentence case (no uppercase, no thin) */
+}
+.hero h1 em{ font-style:normal; color:var(--hi); }
+.hero .sub{
+  grid-column:6 / span 7;
+  margin-top:var(--s4);
+  font-size:var(--f1);
+  line-height:1.3;
+  font-weight:500;
+}
+.hero .scrollcue{ position:absolute; bottom:var(--s3); right:var(--margin); }
 
-  .entry-body h3{
-    font-family:'Fraunces', serif;
-    font-weight:500;
-    font-size:clamp(20px, 2.4vw, 25px);
-    line-height:1.32;
-    margin:0 0 9px;
-  }
-  .entry-body h3 a{
-    text-decoration:none;
-    color:var(--ink);
-    background-image:linear-gradient(var(--gold), var(--gold));
-    background-position:0 100%;
-    background-repeat:no-repeat;
-    background-size:0 1px;
-    transition:background-size .25s ease, color .15s ease;
-  }
-  .entry-body h3 a:hover{
-    color:var(--gold-bright);
-    background-size:100% 1px;
-  }
-  .entry-meta{
-    font-family:'Cormorant Garamond', serif;
-    font-variant-caps:all-small-caps;
-    letter-spacing:.1em;
-    font-size:16px;
-    color:var(--gold);
-    margin-bottom:10px;
-  }
-  .entry-meta .dot{ color:var(--gold-line); margin:0 8px; }
-  .entry-meta .topic{ color:var(--ink-dim); }
-  .entry-note{
-    font-family:'Source Serif 4', serif;
-    font-style:italic;
-    font-size:15.5px;
-    line-height:1.6;
-    color:var(--ink-dim);
-    margin:0;
-    max-width:56ch;
-  }
+/* ---------- Section scaffolding ---------- */
+section{ padding:var(--s7) 0; border-top:1px solid var(--ink); }
+.sechead{ margin-bottom:var(--s5); }
+.sechead .idx{ grid-column:1 / span 2; }
+.sechead .ttl{ grid-column:3 / span 7; font-size:var(--f2); font-weight:700; letter-spacing:-0.02em; line-height:1.02; }
+.sechead .meta{ grid-column:11 / span 2; text-align:right; }
 
-  .entry-side{
-    text-align:right;
-    white-space:nowrap;
-    padding-top:4px;
-  }
-  .entry-date{
-    font-family:'Cormorant Garamond', serif;
-    font-variant-caps:all-small-caps;
-    letter-spacing:.08em;
-    font-size:16px;
-    color:var(--ink-dim);
-    display:block;
-    margin-bottom:8px;
-  }
-  .entry-type{
-    font-family:'Cormorant Garamond', serif;
-    font-variant-caps:all-small-caps;
-    letter-spacing:.14em;
-    font-size:14px;
-    display:inline-block;
-    padding:2px 0;
-    border-top:1px solid currentColor;
-    border-bottom:1px solid currentColor;
-  }
-  .entry-type.media{ color:var(--gold); }
-  .entry-type.research{ color:#8fae9e; }
+/* ---------- Statement ---------- */
+.manifesto p{
+  grid-column:3 / span 8;
+  font-size:var(--f3);
+  line-height:1.14;
+  letter-spacing:-0.02em;
+  font-weight:700;               /* bolder, sentence case */
+}
+.manifesto p .rd{ color:var(--hi); }
 
-  .entry-download{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    font-family:'Cormorant Garamond', serif;
-    font-variant-caps:all-small-caps;
-    letter-spacing:.1em;
-    font-size:15px;
-    color:var(--gold-bright);
-    text-decoration:none;
-    margin-top:12px;
-    padding-bottom:1px;
-    border-bottom:1px solid var(--gold-line);
-    transition:border-color .15s ease, color .15s ease;
-  }
-  .entry-download:hover{ color:var(--ink); border-color:var(--gold-bright); }
-  .entry-download svg{ width:11px; height:11px; flex-shrink:0; }
+/* ---------- Featured ---------- */
+.feature{
+  grid-column:1 / span 12;
+  display:grid; grid-template-columns:repeat(12,1fr); column-gap:var(--gutter);
+  align-items:end;
+  padding:var(--s4) 0;
+  border-bottom:1px solid var(--hair);
+  text-decoration:none; color:var(--ink);
+  transition:padding .5s cubic-bezier(.16,1,.3,1);
+}
+.feature:hover{ padding-left:var(--s3); }
+.feature .no{ grid-column:1 / span 1; font-weight:700; }
+.feature .ft{ grid-column:2 / span 8; font-size:var(--f3); line-height:0.98; letter-spacing:-0.03em; font-weight:700; }
+.feature:hover .ft{ color:var(--hi); }
+.feature .fmeta{ grid-column:11 / span 2; text-align:right; align-self:end; }
+.feature .fmeta div{ margin-bottom:2px; }
 
-  .empty{
-    text-align:center;
-    padding:90px 20px;
-    font-family:'Cormorant Garamond', serif;
-    font-style:italic;
-    font-size:19px;
-    color:var(--ink-dim);
-  }
-  .empty code{ color:var(--gold); font-style:normal; }
+/* ---------- Index list ---------- */
+.list .row{
+  grid-column:1 / span 12;
+  display:grid; grid-template-columns:repeat(12,1fr); column-gap:var(--gutter);
+  align-items:baseline;
+  padding:var(--s3) 0;
+  border-bottom:1px solid var(--hair);
+  text-decoration:none; color:var(--ink);
+  transition:background .4s ease, padding .4s ease;
+}
+.list .row:hover{ background:var(--ink); color:var(--paper); padding-left:var(--s2); padding-right:var(--s2); }
+.list .row:hover .r-out,.list .row:hover .r-date{ color:var(--paper); }
+.list .row:hover .r-title{ color:var(--hi); }
+.list .r-date{ grid-column:1 / span 2; color:var(--grey); }
+.list .r-title{ grid-column:3 / span 6; font-size:var(--f1); font-weight:500; letter-spacing:-0.02em; line-height:1.1; }
+.list .r-topic{ grid-column:9 / span 2; }
+.list .r-out{ grid-column:11 / span 2; text-align:right; color:var(--grey); }
 
-  /* ---------- FOOTER ---------- */
-  footer{
-    max-width:920px;
-    margin:40px auto 0;
-    padding:30px 28px 90px;
-    border-top:1px solid var(--gold-line);
-    font-family:'Cormorant Garamond', serif;
-    font-size:16px;
-    line-height:1.7;
-    color:var(--ink-dim);
-  }
-  footer em{ color:var(--gold); font-style:italic; }
-  footer code{
-    font-family:'Source Serif 4', serif;
-    background:rgba(201,162,39,.1);
-    padding:1px 6px;
-    color:var(--ink);
-  }
+.filters{ grid-column:1 / span 12; display:flex; gap:var(--s2); margin-bottom:var(--s4); flex-wrap:wrap; }
+.filters button{
+  background:none; border:1px solid var(--ink); color:var(--ink);
+  padding:0.4rem 1rem; cursor:pointer; border-radius:100px; font-family:inherit;
+}
+.filters button.on{ background:var(--ink); color:var(--paper); }
+.filters button:hover{ border-color:var(--hi); color:var(--hi); }
+.filters button.on:hover{ background:var(--hi); border-color:var(--hi); color:var(--paper); }
 
-  @media (max-width:620px){
-    header.hero{ padding:64px 22px 40px; }
-    .entry{ grid-template-columns:40px 1fr; }
-    .entry-index{ font-size:22px; }
-    .entry-side{ grid-column:1 / -1; text-align:left; display:flex; gap:16px; align-items:center; padding-top:2px; }
-    .entry-date{ margin-bottom:0; }
-    .controls{ gap:20px; }
-  }
+/* ---------- Stats ---------- */
+.stats .stat{ display:flex; flex-direction:column; }
+.stats .n{ font-size:var(--f4); font-weight:700; letter-spacing:-0.04em; line-height:0.9; }
+.stats .n em{ color:var(--hi); font-style:normal; }
+.stats .cap{ margin-top:var(--s2); border-top:1px solid var(--ink); padding-top:var(--s1); }
+.stats .stat:nth-child(1){ grid-column:1 / span 3; }
+.stats .stat:nth-child(2){ grid-column:4 / span 3; }
+.stats .stat:nth-child(3){ grid-column:7 / span 3; }
+.stats .stat:nth-child(4){ grid-column:10 / span 3; }
 
-  @media (prefers-reduced-motion:reduce){
-    .entry, .entry-body h3 a{ transition:none; }
-  }
+/* ---------- Footer ---------- */
+footer{ background:var(--ink); color:var(--paper); padding:var(--s6) 0 var(--s4); }
+footer h2{ grid-column:1 / span 10; font-size:var(--f4); line-height:0.92; letter-spacing:-0.03em; font-weight:700; }
+footer h2 em{ color:var(--hi); font-style:normal; }
+footer .colophon{ grid-column:1 / span 12; display:grid; grid-template-columns:repeat(12,1fr); column-gap:var(--gutter); margin-top:var(--s6); border-top:1px solid rgba(255,255,255,.2); padding-top:var(--s2); }
+footer .colophon > div:nth-child(1){ grid-column:1 / span 3; }
+footer .colophon > div:nth-child(2){ grid-column:4 / span 3; }
+footer .colophon > div:nth-child(3){ grid-column:7 / span 3; }
+footer .colophon > div:nth-child(4){ grid-column:10 / span 3; text-align:right; }
+footer a{ color:var(--paper); }
+
+/* ---------- Reveal ---------- */
+.reveal{ opacity:0; transform:translateY(28px); transition:opacity 1s cubic-bezier(.16,1,.3,1), transform 1s cubic-bezier(.16,1,.3,1); }
+.reveal.in{ opacity:1; transform:none; }
+
+/* ---------- In-page CSV loader ---------- */
+#update{
+  position:fixed; bottom:var(--s3); left:var(--margin); z-index:120;
+  display:none; align-items:center; gap:.5rem;   /* shown only when opened locally (file://) */
+  background:var(--ink); color:var(--paper);
+  padding:.55rem 1rem; border-radius:100px; cursor:pointer;
+  border:none; font-family:inherit;
+}
+#update:hover{ background:var(--hi); }
+#drop{
+  position:fixed; inset:0; z-index:200; display:none;
+  align-items:center; justify-content:center;
+  background:rgba(16,16,16,.92); color:var(--paper);
+  font-size:var(--f2); font-weight:700; letter-spacing:-0.02em; text-align:center;
+}
+#drop.show{ display:flex; }
+#drop .box{ border:2px dashed rgba(255,255,255,.5); padding:var(--s5) var(--s6); border-radius:12px; }
+#drop small{ display:block; margin-top:var(--s2); font-size:var(--f0); font-weight:400; opacity:.7; }
+#toast{
+  position:fixed; bottom:var(--s3); left:50%; transform:translateX(-50%) translateY(120%);
+  z-index:130; background:var(--hi); color:var(--paper);
+  padding:.6rem 1.2rem; border-radius:100px; transition:transform .45s cubic-bezier(.16,1,.3,1);
+  font-family:"SFMono-Regular",ui-monospace,Menlo,monospace; font-size:var(--fneg); letter-spacing:.12em; text-transform:uppercase;
+}
+#toast.show{ transform:translateX(-50%) translateY(0); }
+
+/* ---------- Load error ---------- */
+#err{ display:none; padding:var(--s7) var(--margin); }
+#err h3{ font-size:var(--f2); font-weight:700; letter-spacing:-0.02em; margin-bottom:var(--s2); }
+#err code{ font-family:ui-monospace,Menlo,monospace; background:var(--ink); color:var(--paper); padding:2px 8px; }
+#err p{ max-width:44ch; margin-bottom:var(--s2); }
+
+/* ---------- Responsive ---------- */
+@media(max-width:900px){
+  :root{ --margin:1.2rem; --gutter:0.8rem; }
+  header.bar nav{ display:none; }
+  .hero h1{ font-size:16vw; }
+  .hero .sub{ grid-column:1 / span 12; font-size:var(--f1); }
+  .manifesto p{ grid-column:1 / span 12; font-size:var(--f2); }
+  .sechead .ttl{ grid-column:1 / span 9; }
+  .sechead .idx,.sechead .meta{ display:none; }
+  .feature .ft{ grid-column:2 / span 10; font-size:var(--f2); }
+  .feature .fmeta{ display:none; }
+  .list .r-title{ grid-column:3 / span 9; font-size:var(--f0); }
+  .list .r-topic,.list .r-out{ display:none; }
+  .list .r-date{ grid-column:1 / span 2; }
+  .stats .stat{ grid-column:1 / span 6 !important; margin-bottom:var(--s4); }
+  .stats .n{ font-size:var(--f3); }
+  footer h2{ grid-column:1 / span 12; font-size:var(--f3); }
+  footer .colophon > div{ grid-column:1 / span 6 !important; text-align:left !important; margin-bottom:var(--s3); }
+}
 </style>
 </head>
 <body>
 
-<header class="hero">
-  <span class="eyebrow">Complete Record</span>
-  <h1 class="title">The published work<br>of <span class="name">Julie Geller</span></h1>
-  <p class="subtitle">Press commentary and Info-Tech Research Group publications, filed chronologically.</p>
-  <div class="colophon" id="colophon"></div>
+<header class="bar">
+  <div class="brand" id="brand">—</div>
+  <nav class="mono">
+    <a href="#work">Selected</a>
+    <a href="#index">Index</a>
+    <a href="#about">Colophon</a>
+  </nav>
+  <div class="mono" id="established"></div>
 </header>
 
-<div class="controls">
-  <div class="search-field">
-    <input id="q" type="text" placeholder="Search by title, outlet, or topic…">
-  </div>
-  <div class="type-toggle" id="typeToggle">
-    <button data-type="" class="active">All</button>
-    <button data-type="Media">Media</button>
-    <button data-type="Research">Research</button>
-  </div>
-  <select id="outletFilter">
-    <option value="">All outlets</option>
-  </select>
+<!-- Shown only if the CSVs can't be loaded (opened via file://) -->
+<div id="err">
+  <h3>Couldn’t load the CSV files.</h3>
+  <p>Browsers block a page from reading local files when you double-click it. To preview, open a terminal in this folder and run:</p>
+  <p><code>python3 -m http.server 8000</code></p>
+  <p>Then visit <code>http://localhost:8000/</code>. Once it’s on any web host, this message never appears.</p>
 </div>
 
-<div class="list" id="results"></div>
+<main id="site" style="display:none;">
 
-<footer>
-  To add an entry, open <code>data.csv</code>, add a row with the same columns, and save. Fill in <code>download</code> with a file link (a PDF, a deck) to show a download link on that entry — leave it blank otherwise. This page reads the file directly — <em>no code to touch</em>.
-</footer>
+  <!-- ============ HERO ============ -->
+  <div class="wrap">
+    <section class="hero grid" style="border-top:none;">
+      <div class="kicker mono">
+        <span id="k-left"></span>
+        <span id="k-right"></span>
+        <span id="k-count">№ —</span>
+      </div>
+      <h1 id="hero-title"></h1>
+      <p class="sub" id="tagline"></p>
+      <div class="scrollcue mono">Scroll ↓</div>
+    </section>
+  </div>
 
-<script>
-async function init(){
-  const resultsEl = document.getElementById('results');
-  const colophon = document.getElementById('colophon');
-  const typeToggle = document.getElementById('typeToggle');
-  const outletSel = document.getElementById('outletFilter');
-  const qInput = document.getElementById('q');
+  <!-- ============ STATEMENT ============ -->
+  <div class="wrap">
+    <section class="manifesto grid" id="about">
+      <div class="sechead grid" style="grid-column:1 / span 12;">
+        <div class="idx mono">00 / Statement</div>
+        <div class="meta mono" id="years"></div>
+      </div>
+      <p class="reveal" id="statement"></p>
+    </section>
+  </div>
 
-  let rows = [];
-  try{
-    const res = await fetch('data.csv', { cache: 'no-store' });
-    if(!res.ok) throw new Error('fetch failed');
-    const text = await res.text();
-    const parsed = Papa.parse(text, { header:true, skipEmptyLines:true });
-    rows = parsed.data.filter(r => r.title && r.title.trim());
-  }catch(e){
-    resultsEl.innerHTML = `<div class="empty">Couldn't load <code>data.csv</code>.<br>If you're opening this file directly, browsers block that for local files.<br>Run <code>python3 -m http.server</code> in this folder, or host it (Netlify, GitHub Pages) — both files need to sit in the same place.</div>`;
-    return;
-  }
+  <!-- ============ FEATURED ============ -->
+  <div class="wrap">
+    <section id="work">
+      <div class="sechead grid">
+        <div class="idx mono">01 / Selected</div>
+        <div class="ttl" id="featured-heading"></div>
+        <div class="meta mono">Featured</div>
+      </div>
+      <div class="grid" id="featured"></div>
+    </section>
+  </div>
 
-  rows.forEach(r=>{
-    r.type = (r.type||'').trim();
-    r.outlet = (r.outlet||'').trim();
-    r.topic = (r.topic||'').trim();
-    r.date = (r.date||'').trim();
-    r.year = r.date ? r.date.slice(0,4) : '—';
-  });
+  <!-- ============ FULL INDEX ============ -->
+  <div class="wrap">
+    <section id="index">
+      <div class="sechead grid">
+        <div class="idx mono">02 / Complete Index</div>
+        <div class="ttl">The record,<br>chronological.</div>
+        <div class="meta mono"><span id="count">00</span> entries</div>
+      </div>
+      <div class="grid"><div class="filters mono" id="filters"></div></div>
+      <div class="grid list" id="list"></div>
+    </section>
+  </div>
 
-  // chronological order gives each entry a stable index number, oldest = 01
-  const chronological = [...rows].sort((a,b)=>a.date.localeCompare(b.date));
-  const indexMap = new Map(chronological.map((r,i)=>[r, i+1]));
+  <!-- ============ STATS ============ -->
+  <div class="wrap">
+    <section>
+      <div class="sechead grid">
+        <div class="idx mono">03 / By the Numbers</div>
+        <div class="ttl">The shape<br>of the work.</div>
+      </div>
+      <div class="stats grid" id="stats"></div>
+    </section>
+  </div>
 
-  [...new Set(rows.map(r=>r.outlet))].sort().forEach(o=>{
-    const opt = document.createElement('option'); opt.value=o; opt.textContent=o; outletSel.appendChild(opt);
-  });
+  <!-- ============ FOOTER ============ -->
+  <footer>
+    <div class="wrap grid">
+      <h2 class="reveal" id="footer-line"></h2>
+      <div class="colophon mono">
+        <div><div style="opacity:.5">Subject</div><span id="c-subject"></span></div>
+        <div><div style="opacity:.5">Type</div>Helvetica Neue<br>Scale on φ 1.618</div>
+        <div><div style="opacity:.5">System</div>Swiss grid · 12 col<br>Editorial long-scroll</div>
+        <div><div style="opacity:.5">Index</div><span id="footcount"></span> entries<br><span id="footyears"></span></div>
+      </div>
+    </div>
+  </footer>
+</main>
 
-  const mediaCount = rows.filter(r=>r.type.toLowerCase()==='media').length;
-  const researchCount = rows.filter(r=>r.type.toLowerCase()==='research').length;
-  const outletCount = new Set(rows.map(r=>r.outlet)).size;
-  const years = rows.map(r=>r.year).filter(y=>y!=='—').sort();
-  const span = years.length ? `${years[0]}–${years[years.length-1]}` : '—';
+<!-- In-page CSV loader: works on a plain double-click, no server needed -->
+<button id="update" class="mono" onclick="document.getElementById('csvpick').click()">↑ Update from CSV</button>
+<input type="file" id="csvpick" accept=".csv,text/csv" multiple hidden>
+<div id="drop"><div class="box">Drop settings.csv and data.csv<small>Release to update the page</small></div></div>
+<div id="toast"></div>
 
-  colophon.innerHTML = `<strong>${rows.length}</strong> entries<span class="sep">·</span><strong>${mediaCount}</strong> press citations<span class="sep">·</span><strong>${researchCount}</strong> research publications<span class="sep">·</span><strong>${outletCount}</strong> outlets<span class="sep">·</span><strong>${span}</strong>`;
-
-  let activeType = '';
-
-  function escapeHtml(str){
-    if(!str) return '';
-    return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-  }
-
-  function render(){
-    const q = qInput.value.toLowerCase().trim();
-    const outlet = outletSel.value;
-
-    const filtered = rows.filter(r=>{
-      const matchesQ = !q || [r.title, r.outlet, r.topic, r.note].join(' ').toLowerCase().includes(q);
-      const matchesType = !activeType || r.type === activeType;
-      const matchesOutlet = !outlet || r.outlet === outlet;
-      return matchesQ && matchesType && matchesOutlet;
-    }).sort((a,b)=> b.date.localeCompare(a.date)); // newest first
-
-    if(!filtered.length){
-      resultsEl.innerHTML = `<div class="empty">No entries match that search.</div>`;
-      return;
-    }
-
-    let html = '';
-    let currentYear = null;
-    filtered.forEach(r=>{
-      if(r.year !== currentYear){
-        currentYear = r.year;
-        html += `<div class="year-mark"><span class="num">${currentYear}</span><span class="rule"></span></div>`;
-      }
-      const d = r.date ? new Date(r.date+'T00:00:00') : null;
-      const dateLabel = d ? d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }) : '';
-      const typeClass = r.type.toLowerCase()==='media' ? 'media' : 'research';
-      const num = String(indexMap.get(r)).padStart(2,'0');
-      const downloadUrl = (r.download||'').trim();
-      const downloadLink = downloadUrl
-        ? `<a class="entry-download" href="${escapeHtml(downloadUrl)}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>Download</a>`
-        : '';
-
-      html += `
-        <article class="entry">
-          <div class="entry-index">${num}</div>
-          <div class="entry-body">
-            <div class="entry-meta">${escapeHtml(r.outlet)}<span class="dot">&middot;</span><span class="topic">${escapeHtml(r.topic)}</span></div>
-            <h3><a href="${escapeHtml(r.url)}" target="_blank" rel="noopener">${escapeHtml(r.title)}</a></h3>
-            <p class="entry-note">${escapeHtml(r.note)}</p>
-            ${downloadLink}
-          </div>
-          <div class="entry-side">
-            <span class="entry-date">${dateLabel}</span>
-            <span class="entry-type ${typeClass}">${escapeHtml(r.type)}</span>
-          </div>
-        </article>`;
-    });
-    resultsEl.innerHTML = html;
-  }
-
-  typeToggle.addEventListener('click', (e)=>{
-    const btn = e.target.closest('button');
-    if(!btn) return;
-    typeToggle.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    activeType = btn.dataset.type;
-    render();
-  });
-  qInput.addEventListener('input', render);
-  outletSel.addEventListener('change', render);
-
-  render();
-}
-init();
+<!-- ============================================================
+     OFFLINE SNAPSHOT — auto-generated. Do not edit by hand.
+     Lets the page work on double-click. Refresh it after editing
+     the CSVs by running "Refresh site.command" (or build.command).
+     ============================================================ -->
+<script type="text/csv" id="settings-snapshot">
+﻿key,value,
+site_title,Julie Geller,
+hero_accent,Geller,
+tagline,A working archive of press citations and research on the machine age of customer experience, not a scrapbook.
+highlight_color,#e4231b,
+established,Est. MMXXIV,
+kicker_left,Selected Writing & Research,
+kicker_right,Customer Experience · AI · RevOps,
+statement,Every entry here argues the same quiet thesis: technology should be held to the standard of the people it serves. The best systems disappear. The human stays.,
+statement_accent,The human stays.,
+featured_heading,Six pieces that frame the argument.,
+featured_count,6,
+footer_line,"Built as a structure, not a scrapbook.",
+footer_accent,not,
+subject_label,Julie Geller · Info-Tech Research Group,
+</script>
+<script type="text/csv" id="articles-snapshot">
+﻿title,outlet,type,date,topic,url,note,download
+Google joins the AI-powered customer service assistant gold rush,CX Dive,Media,2024-09-24,Contact Center AI,https://www.customerexperiencedive.com/news/google-ai-powered-customer-service-assistant-customer-engagement-suite/727969/,On where Google's Customer Engagement Suite stands against Salesforce and Microsoft.,
+"AWS, Salesforce upgrade contact center tech as generative AI creeps in",CX Dive,Media,2024-03-25,Contact Center AI,https://www.customerexperiencedive.com/news/aws-salesforce-call-center-solutions-agents-analysis/711228/,On the future of call centers as employee-facing generative AI expands.,
+Agent roles are evolving as call centers enter the AI-powered era,CX Dive,Media,2024-04-02,Contact Center AI,https://www.customerexperiencedive.com/news/agent-call-center-generative-ai-self-service-investment/712057/,On training agents for critical thinking and emotional intelligence as self-service grows.,
+"Call centers must maintain security, trust as they implement AI, experts say",CX Dive,Media,2024-04-04,Data Privacy,https://www.customerexperiencedive.com/news/call-center-security-customer-trust-generative-ai/712295/,On data privacy and confidentiality as the top concern in AI-powered call centers.,
+"Most consumers prefer live agents for customer service, survey finds",CX Dive,Media,2024-11-01,Customer Service AI,https://www.customerexperiencedive.com/news/customer-service-live-agents-survey-chatbots-ai-five9/731681/,On transparency as the key ingredient in building trust with AI chatbots.,
+Online shopping brings convenience but lacks joy,CX Dive,Media,2025-04-15,E-commerce CX,https://www.customerexperiencedive.com/news/online-shopping-convenience-joy-discovery/745290/,On adding discovery and delight to e-commerce without adding fluff.,
+Klarna changes its AI tune and again recruits humans for customer service,CX Dive,Media,2025-05-09,Customer Service AI,https://www.customerexperiencedive.com/news/klarna-reinvests-human-talent-customer-service-AI-chatbot/747586/,On Klarna's AI-to-human pivot and the limits of AI empathy.,
+Adobe Acrobat Studio brings genAI power to PDFs,Computerworld,Media,2025-08-22,Enterprise AI Tools,https://www.computerworld.com/article/4044077/adobe-acrobat-studio-brings-genai-power-to-pdfs.html,"On Acrobat Studio's positioning against Microsoft Copilot, Foxit, and Nitro.",
+What Is a Domain Name?,Forbes Advisor,Media,2025-09-25,Digital Branding,https://www.forbes.com/advisor/business/what-is-domain-name/,On the trust signals a clean domain name sends a brand's customers.,
+Consumers prefer talking to people in customer service,CX Dive,Media,2026-03-09,Customer Service AI,https://www.customerexperiencedive.com/news/consumers-prefer-human-led-customer-service/814226/,"On AI's real power being to guide live agents, not replace them.",
+Google embeds Gemini AI deeper into Workspace apps,Computerworld,Media,2026-03-11,Enterprise AI Tools,https://www.computerworld.com/article/4143838/google-embeds-gemini-ai-deeper-into-workspace-apps.html,On Gemini in Workspace versus Microsoft 365 Copilot.,
+How agentic AI is shifting the digital shopping landscape,CX Dive,Media,2026-03-06,Agentic Commerce,https://www.customerexperiencedive.com/news/how-agentic-ai-shifts-digital-shopping-experience/813983/,On the risk of brands becoming mere fulfillment behind AI shopping agents.,
+"C3 AI slashes 26% of its workforce; CEO attributes the move, in part, to AI efficiency",CIO,Media,2026-02-26,AI & Workforce,https://www.cio.com/article/4138095/c3-ai-slashes-26-of-its-workforce-ceo-attributes-the-move-in-part-to-ai-efficiency.html,On reading the layoffs as ordinary cost-cutting rather than an AI productivity story.,
+AI referrals make shoppers more likely to either return or never come back,CX Dive,Media,2026-05-12,Agentic Commerce,https://www.customerexperiencedive.com/news/ai-referrals-shoppers-more-likely-return-again-never-come-back/820038/,"On brands needing to justify an AI recommendation fast, or lose the customer's confidence.",
+Scale Your Marketing Department,Info-Tech Research Group,Research,2023-06-09,Marketing Operations,https://www.infotech.com/research/ss/scale-your-marketing-department,"Blueprint on structuring and scaling marketing teams, co-authored.",
+Make the Case for RevOps,Info-Tech Research Group,Research,2025-05-16,RevOps,https://www.infotech.com/research/ss/make-the-case-for-revops,"Blueprint outlining a strategic RevOps model unifying Sales, Marketing, and Customer Success.",
+RevOps Replaces SalesOps as the Driver of Scalable Growth for Orgs,Info-Tech Research Group,Research,2025-06-16,RevOps,https://www.infotech.com/research/revops-replaces-salesops-as-the-driver-of-scalable-growth-for-orgs-new-resource-from-info-tech-research-group-explains-the-shift,Press release announcing the RevOps blueprint.,
+CX Strategy Executive Presentation,Info-Tech Research Group,Research,2026-01-07,CX Strategy,https://www.infotech.com/research/cx-strategy-executive-presentation,Executive framework covering the CX journey from strategy to orchestration.,
+CX Strategy Executive Presentation,Info-Tech Research Group,Research,2026-01-07,CX Strategy,https://www.infotech.com/research/cx-strategy-executive-presentation,Executive framework covering the CX journey from strategy to orchestration.,
+xxxxxxx,,,,,,,
 </script>
 
+<script>
+/* ============================================================
+   CSV loader. Reads settings.csv (config) + data.csv (articles).
+   ============================================================ */
+
+/* Minimal RFC-4180 CSV parser: handles quotes, commas, newlines. */
+function parseCSV(text){
+  const rows=[]; let row=[], field="", i=0, q=false;
+  text=text.replace(/^﻿/,'').replace(/\r\n?/g,'\n');
+  while(i<text.length){
+    const c=text[i];
+    if(q){
+      if(c==='"'){ if(text[i+1]==='"'){field+='"';i+=2;continue;} q=false;i++;continue; }
+      field+=c;i++;continue;
+    }
+    if(c==='"'){ q=true;i++;continue; }
+    if(c===','){ row.push(field);field="";i++;continue; }
+    if(c==='\n'){ row.push(field);rows.push(row);row=[];field="";i++;continue; }
+    field+=c;i++;
+  }
+  if(field.length||row.length){ row.push(field);rows.push(row); }
+  return rows.filter(r=>r.length>1||(r.length===1&&r[0].trim()!==''));
+}
+const toObjects=(rows)=>{ const h=rows[0].map(s=>s.trim()); return rows.slice(1).map(r=>{const o={};h.forEach((k,i)=>o[k]=(r[i]||'').trim());return o;}); };
+const esc=(s='')=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+/* wrap an accent phrase inside a string with a tag (highlight color) */
+const wrap=(str,acc,tag)=>{ str=esc(str); if(!acc) return str; const a=esc(acc);
+  return str.split(a).join(`<${tag}>${a}</${tag.split(' ')[0]}>`); };
+const accent=(str,acc)=>wrap(str,acc,'em');
+
+const fmt = d => { const [y,m,dd]=d.split('-'); const mo=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"][+m-1]||''; return `${mo} ${dd} ’${(y||'').slice(2)}`; };
+
+/* Read the offline snapshot embedded in this file (used on double-click). */
+const embedded = id => { const el=document.getElementById(id); return el ? el.textContent.trim() : ''; };
+
+/* Current CSV text in memory — updated by fetch, snapshot, or the in-page loader. */
+let CUR = { settings:'', data:'' };
+
+/* Parse the two CSV strings and (re)draw the whole page. */
+function applyData(settingsRaw, dataRaw){
+  CUR.settings = settingsRaw; CUR.data = dataRaw;
+
+  /* --- settings: key,value --- (tolerant of trailing commas + unquoted commas in values) */
+  const S={};
+  parseCSV(settingsRaw).forEach(row=>{
+    const key=(row[0]||'').trim();
+    if(!key || key==='key') return;              // skip header / blank
+    let vals=row.slice(1);
+    while(vals.length && (vals[vals.length-1]||'').trim()==='') vals.pop(); // drop trailing empty cols
+    S[key]=vals.join(',').trim();                // rejoin so commas inside the value survive
+  });
+
+  /* --- articles --- */
+  const DATA = toObjects(parseCSV(dataRaw)).filter(d=>d.title);
+  const sorted=[...DATA].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+
+  render(S,DATA,sorted);
+  document.getElementById('err').style.display='none';
+  document.getElementById('site').style.display='block';
+}
+
+async function load(){
+  let settingsRaw, dataRaw;
+  try{
+    /* Preferred: read the live CSV files (works when hosted or served locally). */
+    [settingsRaw,dataRaw] = await Promise.all([
+      fetch('settings.csv').then(r=>{if(!r.ok)throw 0;return r.text();}),
+      fetch('data.csv').then(r=>{if(!r.ok)throw 0;return r.text();})
+    ]);
+  }catch(e){
+    /* Fallback: browser blocked local file reads (double-click). Use embedded snapshot. */
+    settingsRaw = embedded('settings-snapshot');
+    dataRaw     = embedded('articles-snapshot');
+    if(!settingsRaw || !dataRaw){ document.getElementById('err').style.display='block'; setupLoader(); return; }
+  }
+  applyData(settingsRaw, dataRaw);
+  setupLoader();
+}
+
+/* ============================================================
+   In-page CSV loader — drag a CSV onto the page, or click Browse.
+   Works on a plain double-click (no server, no terminal).
+   Figures out which file is which by its header row.
+   ============================================================ */
+function classify(text){
+  const first=(text.split(/\r?\n/)[0]||'').toLowerCase();
+  if(/(^|,)\s*title\s*(,|$)/.test(first)) return 'data';       // articles header
+  if(/^\s*key\s*,/.test(first)) return 'settings';             // settings header
+  if(/highlight_color|hero_accent|site_title/.test(text)) return 'settings';
+  return 'data';
+}
+function toast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg;
+  t.classList.add('show'); clearTimeout(toast._t);
+  toast._t=setTimeout(()=>t.classList.remove('show'),2600);
+}
+async function ingest(fileList){
+  const files=[...fileList].filter(f=>/\.csv$/i.test(f.name)||(f.type||'').includes('csv'));
+  if(!files.length){ toast('Drop a .csv file'); return; }
+  const read=await Promise.all(files.map(f=>f.text().then(t=>({name:f.name,text:t}))));
+  const names=[];
+  read.forEach(f=>{ const kind=classify(f.text); if(kind==='settings')CUR.settings=f.text; else CUR.data=f.text; names.push(f.name); });
+  applyData(CUR.settings, CUR.data);
+  window.scrollTo({top:0,behavior:'auto'});
+  toast('Updated from '+names.join(' + '));
+}
+function setupLoader(){
+  /* The manual loader is only needed for local double-click. When hosted
+     (http/https), the CSVs load automatically, so keep the button hidden. */
+  const local = location.protocol === 'file:';
+  if(local) document.getElementById('update').style.display='flex';
+  if(!local) return;   /* no drag/drop or picker wiring needed on a web host */
+
+  const pick=document.getElementById('csvpick');
+  pick.addEventListener('change',e=>{ ingest(e.target.files); e.target.value=''; });
+  const overlay=document.getElementById('drop');
+  let depth=0;
+  window.addEventListener('dragenter',e=>{ if(e.dataTransfer&&[...e.dataTransfer.types].includes('Files')){ e.preventDefault(); depth++; overlay.classList.add('show'); }});
+  window.addEventListener('dragover',e=>{ if(overlay.classList.contains('show')) e.preventDefault(); });
+  window.addEventListener('dragleave',e=>{ depth--; if(depth<=0){ depth=0; overlay.classList.remove('show'); }});
+  window.addEventListener('drop',e=>{ e.preventDefault(); depth=0; overlay.classList.remove('show'); if(e.dataTransfer&&e.dataTransfer.files.length) ingest(e.dataTransfer.files); });
+}
+
+function render(S,DATA,sorted){
+  /* highlight color */
+  if(S.highlight_color) document.documentElement.style.setProperty('--hi',S.highlight_color);
+
+  /* header */
+  document.getElementById('brand').textContent = S.site_title||'';
+  document.getElementById('established').textContent = S.established||'';
+
+  /* hero */
+  document.getElementById('hero-title').innerHTML = accent(S.site_title||'', S.hero_accent);
+  document.getElementById('tagline').textContent = S.tagline||'';
+  document.getElementById('k-left').textContent = S.kicker_left||'';
+  document.getElementById('k-right').textContent = S.kicker_right||'';
+
+  /* years span */
+  const dates=DATA.map(d=>d.date).filter(Boolean).sort();
+  const yrs = dates.length ? `${dates[0].slice(0,4)}—${dates[dates.length-1].slice(0,4)}` : '';
+  document.getElementById('years').textContent = yrs;
+  document.getElementById('footyears').textContent = yrs.replace('—',' — ');
+  document.getElementById('k-count').textContent = `№ 01 — ${String(DATA.length).padStart(2,'0')}`;
+
+  /* statement */
+  document.getElementById('statement').innerHTML = wrap(S.statement||'', S.statement_accent, 'span class="rd"');
+
+  /* featured */
+  const n = parseInt(S.featured_count||'6',10);
+  const featured = sorted.slice(0,n);
+  document.getElementById('featured-heading').innerHTML = esc(S.featured_heading||'').replace(/\. /,'.<br>');
+  document.getElementById('featured').innerHTML = featured.map((d,i)=>`
+    <a class="feature reveal" href="${esc(d.url)}" target="_blank" rel="noopener">
+      <div class="no mono">${String(i+1).padStart(2,'0')}</div>
+      <div class="ft">${esc(d.title)}</div>
+      <div class="fmeta mono">
+        <div>${esc(d.outlet)}</div><div>${esc(d.topic)}</div><div>${fmt(d.date)}</div>
+      </div>
+    </a>`).join('');
+
+  /* index list + filters */
+  const listEl=document.getElementById('list');
+  const renderRows=(rows)=>{ listEl.innerHTML = rows.map(d=>`
+    <a class="row" href="${esc(d.url)}" target="_blank" rel="noopener">
+      <div class="r-date mono">${fmt(d.date)}</div>
+      <div class="r-title">${esc(d.title)}</div>
+      <div class="r-topic mono">${esc(d.topic)}</div>
+      <div class="r-out mono">${esc(d.outlet)}</div>
+    </a>`).join(''); };
+  renderRows(sorted);
+  document.getElementById('count').textContent=String(DATA.length).padStart(2,'0');
+  document.getElementById('footcount').textContent=DATA.length;
+
+  const types=[...new Set(DATA.map(d=>d.type).filter(Boolean))];
+  const cats=["All",...types];
+  const fEl=document.getElementById('filters');
+  fEl.innerHTML=cats.map((c,i)=>`<button class="${i===0?'on':''}" data-c="${esc(c)}">${esc(c)}</button>`).join('');
+  fEl.addEventListener('click',e=>{
+    if(e.target.tagName!=='BUTTON')return;
+    [...fEl.children].forEach(b=>b.classList.remove('on'));
+    e.target.classList.add('on');
+    const c=e.target.dataset.c;
+    renderRows(c==="All"?sorted:sorted.filter(d=>d.type===c));
+  });
+
+  /* stats */
+  const nOut=new Set(DATA.map(d=>d.outlet).filter(Boolean)).size;
+  const nTop=new Set(DATA.map(d=>d.topic).filter(Boolean)).size;
+  const byType=types.map(t=>[DATA.filter(d=>d.type===t).length, t+' pieces']);
+  const cells=[...byType,[nOut,'Outlets'],[nTop,'Topics tracked']].slice(0,4);
+  document.getElementById('stats').innerHTML=cells.map(([v,c])=>
+    `<div class="stat reveal"><div class="n"><em>${String(v).padStart(2,'0')}</em></div><div class="cap mono">${esc(c)}</div></div>`).join('');
+
+  /* footer */
+  document.getElementById('footer-line').innerHTML = accent(S.footer_line||'', S.footer_accent);
+  document.getElementById('c-subject').innerHTML = esc(S.subject_label||'').replace(/ · /,'<br>');
+
+  /* reveal on scroll */
+  const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){e.target.classList.add('in'); io.unobserve(e.target);} }),{threshold:0.12});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+}
+
+load();
+</script>
 </body>
 </html>

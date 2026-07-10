@@ -2,7 +2,7 @@
 
 An editorial archive site. Everything you see is driven by two CSV files — you never touch the HTML.
 
-- `homepage.html` — the page (design + logic). Leave it alone.
+- `index.html` — the page (design + logic). Leave it alone.
 - `settings.csv` — the site's wording, title, and highlight colour.
 - `data.csv` — the list of articles/research.
 
@@ -49,18 +49,16 @@ title,outlet,type,date,topic,url,note,download
 
 Counts, year range, filters, and stats all recalculate from `data.csv` — add rows and everything updates.
 
-## The one step after editing a CSV
+## Seeing your CSV edits (no terminal, no scripts)
 
-After you change `settings.csv` or `data.csv`, **double-click `Refresh site.command`.** A small window opens, says "Snapshot refreshed," and closes. That's it.
+1. Double-click `index.html` to open it.
+2. Either **drag `settings.csv` and `data.csv` onto the page**, or click the **"↑ Update from CSV"** button (bottom-left) and pick them.
+3. The page redraws instantly with your latest content.
 
-Why: browsers block a double-clicked page from reading separate files on your computer. The refresh script copies your latest CSV content into `homepage.html` so it works on a plain double-click. Then just double-click `homepage.html` to view.
+You can drop both files at once, or just the one you changed. The page figures out which is which from its header row.
 
-(First time only: macOS may say the script is from an "unidentified developer." Right-click `Refresh site.command` → Open → Open. After that, double-click works normally.)
-
-## Viewing
-
-Double-click `homepage.html`. No web server, no terminal.
+Why this step exists: for security, browsers won't let a double-clicked page read other files on your computer on its own — so you hand it the files once. Nothing is installed, uploaded, or sent anywhere; it all happens in your browser.
 
 ## Publishing
 
-Drop all four files (`homepage.html`, `settings.csv`, `data.csv`, `Refresh site.command`) onto any static host — [Netlify drop](https://app.netlify.com/drop) or GitHub Pages. Keep them in the same folder. When hosted, the page reads the live CSVs directly, so hosted edits show up without the refresh step.
+Drop all three files (`index.html`, `settings.csv`, `data.csv`) onto any static host — [Netlify drop](https://app.netlify.com/drop) or GitHub Pages. Keep them in the same folder. **When hosted, the page loads the CSVs automatically** — no drag step needed. Re-upload a CSV to update the live site.
