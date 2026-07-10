@@ -1,51 +1,66 @@
 # The Geller Index
 
-A small archive site listing Julie Geller's press citations and Info-Tech research publications. Two files, no build step:
+An editorial archive site. Everything you see is driven by two CSV files — you never touch the HTML.
 
-- `index.html` — the page itself (design, search, filters)
-- `data.csv` — the actual list of publications
+- `homepage.html` — the page (design + logic). Leave it alone.
+- `settings.csv` — the site's wording, title, and highlight colour.
+- `data.csv` — the list of articles/research.
 
-## Updating the list
+## Changing the title, colour, and copy — `settings.csv`
 
-Open `data.csv` in Excel, Numbers, or Google Sheets. Keep the header row exactly as-is:
+Open `settings.csv` in Excel, Numbers, or Google Sheets. It's a simple `key,value` list. Change the value in the right-hand column:
+
+| key | What it controls |
+|---|---|
+| `site_title` | The big headline + top-left brand (e.g. change "The Geller Index" to anything) |
+| `hero_accent` | The word inside the title shown in the highlight colour (must appear in `site_title`) |
+| `tagline` | The sentence under the headline |
+| `highlight_color` | The accent colour, as a hex value, e.g. `#e4231b` |
+| `established` | Small top-right mark |
+| `kicker_left` / `kicker_right` | The two labels on the thin line above the title |
+| `statement` | The large statement sentence |
+| `statement_accent` | The phrase within the statement shown in the highlight colour |
+| `featured_heading` | Heading of the "Selected" section |
+| `featured_count` | How many pieces appear in the featured block (e.g. `6`) |
+| `footer_line` | The big footer line |
+| `footer_accent` | The word within it shown in the highlight colour |
+| `subject_label` | Colophon "Subject" credit |
+
+If a value contains a comma, wrap it in double quotes: `"A test statement, with a comma."`
+
+## Adding articles — `data.csv`
+
+Keep the header row exactly as-is. Add one row per piece:
 
 ```
-title,outlet,type,date,topic,url,note
+title,outlet,type,date,topic,url,note,download
 ```
-
-Add one row per publication:
 
 | Column | What goes here |
 |---|---|
-| `title` | The headline of the article or research piece |
-| `outlet` | Publication name, e.g. `CX Dive`, `Computerworld`, `Info-Tech Research Group` |
-| `type` | Either `Media` (press coverage) or `Research` (an Info-Tech-authored piece) |
-| `date` | `YYYY-MM-DD` format, e.g. `2026-03-11` |
-| `topic` | A short tag, e.g. `Contact Center AI`, `RevOps`, `Agentic Commerce` |
-| `url` | Full link to the piece |
-| `note` | One sentence on what she said or the piece covers |
+| `title` | Headline of the article or research piece |
+| `outlet` | Publication name, e.g. `CX Dive`, `Computerworld` |
+| `type` | `Media` or `Research` — these become the filter buttons + stats automatically |
+| `date` | `YYYY-MM-DD` — the list sorts newest-first on its own |
+| `topic` | Short tag, e.g. `RevOps`, `Agentic Commerce` |
+| `url` | Full link |
+| `note` | One sentence on the piece (optional) |
+| `download` | Leave blank |
 
-Save as CSV (if your spreadsheet app asks, choose "CSV UTF-8"), and make sure the saved filename is still `data.csv`, replacing the old one. Reload the page — no code editing needed.
+Counts, year range, filters, and stats all recalculate from `data.csv` — add rows and everything updates.
 
-If a title or note contains a comma, wrap that whole field in double quotes, e.g. `"AWS, Salesforce upgrade contact center tech"`. Most spreadsheet apps do this automatically when you export to CSV.
+## The one step after editing a CSV
 
-## Viewing it locally
+After you change `settings.csv` or `data.csv`, **double-click `Refresh site.command`.** A small window opens, says "Snapshot refreshed," and closes. That's it.
 
-Browsers block a webpage from loading a local CSV file directly (a security restriction on the `file://` protocol), so double-clicking `index.html` won't show any entries — you'll see an error message on the page itself explaining this.
+Why: browsers block a double-clicked page from reading separate files on your computer. The refresh script copies your latest CSV content into `homepage.html` so it works on a plain double-click. Then just double-click `homepage.html` to view.
 
-To preview on your own machine, open a terminal in this folder and run:
+(First time only: macOS may say the script is from an "unidentified developer." Right-click `Refresh site.command` → Open → Open. After that, double-click works normally.)
 
-```
-python3 -m http.server 8000
-```
+## Viewing
 
-Then visit `http://localhost:8000` in a browser.
+Double-click `homepage.html`. No web server, no terminal.
 
-## Publishing it for others to view
+## Publishing
 
-Any static file host works, since it's just these two files:
-
-- **Netlify** — drag the folder onto [app.netlify.com/drop](https://app.netlify.com/drop) for an instant link. To update later, edit `data.csv` and drag the folder again.
-- **GitHub Pages** — push both files to a repo and enable Pages in the repo settings.
-
-Either way, keep `index.html` and `data.csv` in the same folder — the page looks for `data.csv` right next to it.
+Drop all four files (`homepage.html`, `settings.csv`, `data.csv`, `Refresh site.command`) onto any static host — [Netlify drop](https://app.netlify.com/drop) or GitHub Pages. Keep them in the same folder. When hosted, the page reads the live CSVs directly, so hosted edits show up without the refresh step.
