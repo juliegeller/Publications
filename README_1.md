@@ -12,21 +12,35 @@ Open `settings.csv` in Excel, Numbers, or Google Sheets. It's a simple `key,valu
 
 | key | What it controls |
 |---|---|
-| `site_title` | The big headline + top-left brand (e.g. change "The Geller Index" to anything) |
+| `site_title` | The big headline + top-left brand (e.g. change "Julie Geller" to anything) |
 | `hero_accent` | The word inside the title shown in the highlight colour (must appear in `site_title`) |
 | `tagline` | The sentence under the headline |
 | `highlight_color` | The accent colour, as a hex value, e.g. `#e4231b` |
 | `established` | Small top-right mark |
-| `kicker_left` / `kicker_right` | The two labels on the thin line above the title |
+| `kicker_left` | The label on the thin line above the title |
 | `statement` | The large statement sentence |
 | `statement_accent` | The phrase within the statement shown in the highlight colour |
 | `featured_heading` | Heading of the "Selected" section |
 | `featured_count` | How many pieces appear in the featured block (e.g. `6`) |
 | `footer_line` | The big footer line |
 | `footer_accent` | The word within it shown in the highlight colour |
-| `subject_label` | Colophon "Subject" credit |
+| `focus` | Footer "Focus" column — separate items with ` · ` and each becomes its own line |
+| `subject_label` | Footer "Who" credit — separate with ` · ` for line breaks |
+| `contact_email` | Where the Contact form sends (currently `julie@gellerstrategic.com`) |
+| `linkedin_url` | Link for the LinkedIn icon in the header. **Update this to Julie's real profile URL.** Leave blank to hide the icon. |
+| `contact_form_action` | Optional — see "The Contact form" below. Leave blank to use the email-app method. |
 
-If a value contains a comma, wrap it in double quotes: `"A test statement, with a comma."`
+The footer's "Featured in" column and the "By the Numbers" stats are generated automatically from `data.csv` — no setting needed.
+
+If a value contains a comma, wrap it in double quotes: `"A statement, with a comma."` (The `·` separators are fine as-is — just save as **CSV UTF-8** so they don't get garbled.)
+
+## The Contact form
+
+The header's **Contact** button opens a form (first name, last name, email, message).
+
+By default — and with no setup — pressing Send opens the visitor's own email app with a message pre-addressed to `contact_email`, ready to send. This works everywhere with zero configuration.
+
+If you'd rather the message send silently from the page (no email app opening), create a free form endpoint at [formspree.io](https://formspree.io) (2-minute signup, confirm `julie@gellerstrategic.com`), then paste the endpoint URL into `contact_form_action` in `settings.csv`. The form will POST to it and show a "message sent" confirmation. Leave `contact_form_action` blank to keep the email-app method.
 
 ## Adding articles — `data.csv`
 

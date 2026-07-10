@@ -30,11 +30,18 @@
   --s6: 6.854rem;
   --s7: 11.089rem;
 
-  --paper:  #f3f1ea;
-  --ink:    #101010;
+  --paper:  #f4f2ec;
+  --ink:    #141414;
   --hi:     #e4231b;   /* overwritten by settings.csv highlight_color */
   --grey:   #8c887e;
-  --hair:   rgba(16,16,16,0.16);
+  --hair:   rgba(20,20,20,0.14);
+
+  /* Soothing gradient palette — soft, desaturated, calm */
+  --g1: #bfe0da;   /* seafoam   */
+  --g2: #d9d2ef;   /* lavender  */
+  --g3: #f4dcd4;   /* blush     */
+  --g4: #d8e7cb;   /* sage      */
+  --g5: #cfe0ef;   /* soft sky  */
 
   --grid: 12;
   --gutter: 1.618rem;
@@ -53,6 +60,30 @@ body{
 }
 ::selection{ background:var(--hi); color:var(--paper); }
 
+/* ---------- Soothing animated gradient background ---------- */
+#bg{
+  position:fixed; inset:-25%; z-index:-2; pointer-events:none;
+  background:
+    radial-gradient(42% 42% at 20% 28%, var(--g1), transparent 72%),
+    radial-gradient(46% 46% at 82% 18%, var(--g2), transparent 72%),
+    radial-gradient(48% 48% at 72% 82%, var(--g3), transparent 72%),
+    radial-gradient(44% 44% at 24% 78%, var(--g4), transparent 72%),
+    radial-gradient(50% 50% at 50% 50%, var(--g5), transparent 74%);
+  background-size:200% 200%;
+  filter:blur(64px) saturate(1.12) hue-rotate(var(--hue,0deg));
+  opacity:.78;
+  animation:drift 42s ease-in-out infinite alternate;
+  transition:filter .6s ease;
+  will-change:background-position,filter;
+}
+@keyframes drift{
+  0%  { background-position:0% 0%,100% 0%,100% 100%,0% 100%,50% 50%; }
+  100%{ background-position:26% 22%,72% 32%,58% 68%,22% 82%,44% 46%; }
+}
+/* paper veil keeps type crisp over the colour */
+#veil{ position:fixed; inset:0; z-index:-1; pointer-events:none; background:rgba(244,242,236,0.30); }
+@media(prefers-reduced-motion:reduce){ #bg{ animation:none; } }
+
 .mono{
   font-family:"SFMono-Regular", ui-monospace, "Roboto Mono", Menlo, monospace;
   font-size:var(--fneg);
@@ -67,14 +98,30 @@ body{
 /* ---------- Top bar ---------- */
 header.bar{
   position:fixed; top:0; left:0; right:0; z-index:100;
-  display:flex; justify-content:space-between; align-items:baseline;
+  display:flex; justify-content:space-between; align-items:center;
   padding:var(--s2) var(--margin);
-  mix-blend-mode:difference; color:#fff;
+  color:var(--ink);
+  transition:color .5s ease;
 }
+header.bar.on-dark{ color:var(--paper); }
 header.bar .brand{ font-weight:700; letter-spacing:-0.02em; font-size:var(--f0); }
-header.bar nav{ display:flex; gap:var(--s4); }
-header.bar nav a{ color:inherit; text-decoration:none; }
-header.bar nav a:hover{ color:var(--hi); }
+.bar-right{ display:flex; align-items:center; gap:var(--s3); }
+.bar-right .est{ opacity:.55; }
+.bar-right .ic{
+  color:inherit; display:inline-flex; width:1.6rem; height:1.6rem;
+  align-items:center; justify-content:center; border:1px solid currentColor; border-radius:50%;
+  transition:background .35s ease, color .35s ease, transform .35s ease;
+}
+.bar-right .ic:hover{ background:var(--hi); border-color:var(--hi); color:#fff; transform:translateY(-2px); }
+.bar-right .ic svg{ width:.85rem; height:.85rem; fill:currentColor; }
+.contact-btn{
+  font-family:"SFMono-Regular",ui-monospace,Menlo,monospace; font-size:var(--fneg);
+  letter-spacing:0.14em; text-transform:uppercase;
+  color:inherit; background:transparent; cursor:pointer;
+  border:1px solid currentColor; border-radius:100px; padding:.5rem 1.1rem;
+  transition:background .35s ease, color .35s ease, border-color .35s ease, transform .35s ease;
+}
+.contact-btn:hover{ background:var(--hi); border-color:var(--hi); color:#fff; transform:translateY(-2px); }
 
 /* ---------- Hero ---------- */
 .hero{
@@ -133,9 +180,11 @@ section{ padding:var(--s7) 0; border-top:1px solid var(--ink); }
   text-decoration:none; color:var(--ink);
   transition:padding .5s cubic-bezier(.16,1,.3,1);
 }
-.feature:hover{ padding-left:var(--s3); }
-.feature .no{ grid-column:1 / span 1; font-weight:700; }
-.feature .ft{ grid-column:2 / span 8; font-size:var(--f3); line-height:0.98; letter-spacing:-0.03em; font-weight:700; }
+.feature{ transition:padding .6s cubic-bezier(.16,1,.3,1), background .5s ease; border-radius:6px; }
+.feature:hover{ padding-left:var(--s3); background:rgba(20,20,20,0.035); }
+.feature .no{ grid-column:1 / span 1; font-weight:700; transition:color .45s ease; }
+.feature:hover .no{ color:var(--hi); }
+.feature .ft{ grid-column:2 / span 8; font-size:var(--f3); line-height:0.98; letter-spacing:-0.03em; font-weight:700; transition:color .45s cubic-bezier(.16,1,.3,1); }
 .feature:hover .ft{ color:var(--hi); }
 .feature .fmeta{ grid-column:11 / span 2; text-align:right; align-self:end; }
 .feature .fmeta div{ margin-bottom:2px; }
@@ -148,9 +197,11 @@ section{ padding:var(--s7) 0; border-top:1px solid var(--ink); }
   padding:var(--s3) 0;
   border-bottom:1px solid var(--hair);
   text-decoration:none; color:var(--ink);
-  transition:background .4s ease, padding .4s ease;
+  border-radius:6px;
+  transition:background .55s cubic-bezier(.16,1,.3,1), padding .55s cubic-bezier(.16,1,.3,1), color .45s ease;
 }
-.list .row:hover{ background:var(--ink); color:var(--paper); padding-left:var(--s2); padding-right:var(--s2); }
+.list .row *{ transition:color .45s ease; }
+.list .row:hover{ background:var(--ink); color:var(--paper); padding-left:var(--s3); padding-right:var(--s3); }
 .list .row:hover .r-out,.list .row:hover .r-date{ color:var(--paper); }
 .list .row:hover .r-title{ color:var(--hi); }
 .list .r-date{ grid-column:1 / span 2; color:var(--grey); }
@@ -162,7 +213,9 @@ section{ padding:var(--s7) 0; border-top:1px solid var(--ink); }
 .filters button{
   background:none; border:1px solid var(--ink); color:var(--ink);
   padding:0.4rem 1rem; cursor:pointer; border-radius:100px; font-family:inherit;
+  transition:background .4s ease, color .4s ease, border-color .4s ease, transform .4s ease;
 }
+.filters button:hover{ transform:translateY(-2px); }
 .filters button.on{ background:var(--ink); color:var(--paper); }
 .filters button:hover{ border-color:var(--hi); color:var(--hi); }
 .filters button.on:hover{ background:var(--hi); border-color:var(--hi); color:var(--paper); }
@@ -211,12 +264,61 @@ footer a{ color:var(--paper); }
 #drop .box{ border:2px dashed rgba(255,255,255,.5); padding:var(--s5) var(--s6); border-radius:12px; }
 #drop small{ display:block; margin-top:var(--s2); font-size:var(--f0); font-weight:400; opacity:.7; }
 #toast{
-  position:fixed; bottom:var(--s3); left:50%; transform:translateX(-50%) translateY(120%);
+  position:fixed; bottom:var(--s3); left:50%; transform:translateX(-50%) translateY(220%);
   z-index:130; background:var(--hi); color:var(--paper);
-  padding:.6rem 1.2rem; border-radius:100px; transition:transform .45s cubic-bezier(.16,1,.3,1);
+  padding:.6rem 1.2rem; border-radius:100px;
+  visibility:hidden; opacity:0;
+  transition:transform .45s cubic-bezier(.16,1,.3,1), opacity .3s ease, visibility .45s;
   font-family:"SFMono-Regular",ui-monospace,Menlo,monospace; font-size:var(--fneg); letter-spacing:.12em; text-transform:uppercase;
 }
-#toast.show{ transform:translateX(-50%) translateY(0); }
+#toast.show{ transform:translateX(-50%) translateY(0); visibility:visible; opacity:1; }
+
+/* ---------- Contact modal ---------- */
+.modal{
+  position:fixed; inset:0; z-index:300; display:flex; align-items:center; justify-content:center;
+  padding:var(--s3);
+  background:rgba(20,20,20,0.44); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  opacity:0; visibility:hidden; transition:opacity .5s ease, visibility .5s ease;
+}
+.modal.open{ opacity:1; visibility:visible; }
+.modal-card{
+  position:relative; width:min(560px,100%);
+  background:var(--paper); color:var(--ink);
+  padding:var(--s5) var(--s5) var(--s4);
+  border-radius:14px; box-shadow:0 40px 120px rgba(20,20,20,.32);
+  transform:translateY(24px) scale(.98); transition:transform .55s cubic-bezier(.16,1,.3,1);
+}
+.modal.open .modal-card{ transform:none; }
+.modal-x{
+  position:absolute; top:var(--s3); right:var(--s3); width:2rem; height:2rem; border-radius:50%;
+  border:1px solid var(--hair); background:none; color:var(--ink); cursor:pointer; font-size:1.1rem; line-height:1;
+  transition:background .3s ease, color .3s ease, transform .3s ease;
+}
+.modal-x:hover{ background:var(--ink); color:var(--paper); transform:rotate(90deg); }
+.modal-kicker{ color:var(--hi); margin-bottom:var(--s1); }
+.modal-card h3{ font-size:var(--f2); font-weight:700; letter-spacing:-0.02em; line-height:1.02; margin-bottom:var(--s3); }
+#contact-form label{ display:block; font-family:"SFMono-Regular",ui-monospace,Menlo,monospace; font-size:var(--fneg); letter-spacing:.12em; text-transform:uppercase; color:var(--grey); margin-bottom:var(--s3); }
+#contact-form .frow{ display:flex; gap:var(--s3); }
+#contact-form .frow label{ flex:1; }
+#contact-form input, #contact-form textarea{
+  display:block; width:100%; margin-top:.4rem;
+  background:transparent; border:none; border-bottom:1px solid var(--ink);
+  font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; font-size:var(--f0); color:var(--ink);
+  padding:.5rem 0; letter-spacing:normal; text-transform:none; resize:vertical;
+  transition:border-color .35s ease;
+}
+#contact-form input:focus, #contact-form textarea:focus{ outline:none; border-color:var(--hi); }
+#contact-form input::placeholder,#contact-form textarea::placeholder{ color:var(--hair); }
+.send{
+  margin-top:var(--s2); width:100%; cursor:pointer;
+  background:var(--ink); color:var(--paper); border:1px solid var(--ink);
+  font-family:"SFMono-Regular",ui-monospace,Menlo,monospace; font-size:var(--fneg); letter-spacing:.14em; text-transform:uppercase;
+  padding:.9rem 1rem; border-radius:100px;
+  transition:background .4s ease, transform .4s ease;
+}
+.send:hover{ background:var(--hi); border-color:var(--hi); transform:translateY(-2px); }
+.formnote{ margin-top:var(--s2); font-size:var(--fneg); letter-spacing:.06em; color:var(--grey); min-height:1em; }
+.formnote.ok{ color:#1f8a4c; }
 
 /* ---------- Load error ---------- */
 #err{ display:none; padding:var(--s7) var(--margin); }
@@ -227,7 +329,9 @@ footer a{ color:var(--paper); }
 /* ---------- Responsive ---------- */
 @media(max-width:900px){
   :root{ --margin:1.2rem; --gutter:0.8rem; }
-  header.bar nav{ display:none; }
+  .bar-right .est{ display:none; }
+  #contact-form .frow{ flex-direction:column; gap:0; }
+  .modal-card{ padding:var(--s4) var(--s3) var(--s3); }
   .hero h1{ font-size:16vw; }
   .hero .sub{ grid-column:1 / span 12; font-size:var(--f1); }
   .manifesto p{ grid-column:1 / span 12; font-size:var(--f2); }
@@ -247,14 +351,18 @@ footer a{ color:var(--paper); }
 </head>
 <body>
 
+<div id="bg"></div>
+<div id="veil"></div>
+
 <header class="bar">
   <div class="brand" id="brand">—</div>
-  <nav class="mono">
-    <a href="#work">Selected</a>
-    <a href="#index">Index</a>
-    <a href="#about">Colophon</a>
-  </nav>
-  <div class="mono" id="established"></div>
+  <div class="bar-right">
+    <span class="mono est" id="established"></span>
+    <a id="linkedin" class="ic" href="#" target="_blank" rel="noopener" aria-label="LinkedIn" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9 9h3.8v1.7h.1c.5-1 1.8-2 3.7-2 4 0 4.7 2.6 4.7 6V21h-4v-5.3c0-1.3 0-2.9-1.8-2.9s-2 1.4-2 2.8V21H9z"/></svg>
+    </a>
+    <button id="contact-open" class="contact-btn">Contact</button>
+  </div>
 </header>
 
 <!-- Shown only if the CSVs can't be loaded (opened via file://) -->
@@ -272,7 +380,6 @@ footer a{ color:var(--paper); }
     <section class="hero grid" style="border-top:none;">
       <div class="kicker mono">
         <span id="k-left"></span>
-        <span id="k-right"></span>
         <span id="k-count">№ —</span>
       </div>
       <h1 id="hero-title"></h1>
@@ -332,15 +439,29 @@ footer a{ color:var(--paper); }
   <footer>
     <div class="wrap grid">
       <h2 class="reveal" id="footer-line"></h2>
-      <div class="colophon mono">
-        <div><div style="opacity:.5">Subject</div><span id="c-subject"></span></div>
-        <div><div style="opacity:.5">Type</div>Helvetica Neue<br>Scale on φ 1.618</div>
-        <div><div style="opacity:.5">System</div>Swiss grid · 12 col<br>Editorial long-scroll</div>
-        <div><div style="opacity:.5">Index</div><span id="footcount"></span> entries<br><span id="footyears"></span></div>
-      </div>
+      <div class="colophon mono" id="colophon"></div>
     </div>
   </footer>
 </main>
+
+<!-- ============ CONTACT MODAL ============ -->
+<div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-card">
+    <button class="modal-x" id="modal-close" aria-label="Close">✕</button>
+    <div class="modal-kicker mono">Get in touch</div>
+    <h3 id="modal-title">Let’s talk customer&nbsp;experience.</h3>
+    <form id="contact-form" novalidate>
+      <div class="frow">
+        <label>First name<input name="first" autocomplete="given-name" required></label>
+        <label>Last name<input name="last" autocomplete="family-name" required></label>
+      </div>
+      <label>Email<input type="email" name="email" autocomplete="email" required></label>
+      <label>Message<textarea name="message" rows="4" required></textarea></label>
+      <button type="submit" class="send">Send message</button>
+      <p class="formnote mono" id="formnote"></p>
+    </form>
+  </div>
+</div>
 
 <!-- In-page CSV loader: works on a plain double-click, no server needed -->
 <button id="update" class="mono" onclick="document.getElementById('csvpick').click()">↑ Update from CSV</button>
@@ -354,21 +475,24 @@ footer a{ color:var(--paper); }
      the CSVs by running "Refresh site.command" (or build.command).
      ============================================================ -->
 <script type="text/csv" id="settings-snapshot">
-﻿key,value,
-site_title,Julie Geller,
-hero_accent,Geller,
-tagline,A working archive of press citations and research on the machine age of customer experience, not a scrapbook.
-highlight_color,#e4231b,
-established,Est. MMXXIV,
-kicker_left,Selected Writing & Research,
-kicker_right,Customer Experience · AI · RevOps,
-statement,Every entry here argues the same quiet thesis: technology should be held to the standard of the people it serves. The best systems disappear. The human stays.,
-statement_accent,The human stays.,
-featured_heading,Six pieces that frame the argument.,
-featured_count,6,
-footer_line,"Built as a structure, not a scrapbook.",
-footer_accent,not,
-subject_label,Julie Geller · Info-Tech Research Group,
+key,value
+site_title,Julie Geller
+hero_accent,Geller
+tagline,Press citations and research on the machine age of customer experience.
+highlight_color,#e4231b
+established,Est. MMXXIV
+kicker_left,Selected Writing & Research
+statement,"Every entry here argues one quiet thesis: technology should be held to the standard of the people it serves. The best systems disappear. The human stays."
+statement_accent,The human stays.
+featured_heading,Six pieces that frame the argument.
+featured_count,6
+footer_line,Keeping the human in customer experience.
+footer_accent,human
+focus,Customer Experience · Contact Center AI · RevOps
+subject_label,Julie Geller · Info-Tech Research Group
+contact_email,julie@gellerstrategic.com
+linkedin_url,https://www.linkedin.com/in/juliegeller/
+contact_form_action,
 </script>
 <script type="text/csv" id="articles-snapshot">
 ﻿title,outlet,type,date,topic,url,note,download
@@ -431,6 +555,8 @@ const embedded = id => { const el=document.getElementById(id); return el ? el.te
 
 /* Current CSV text in memory — updated by fetch, snapshot, or the in-page loader. */
 let CUR = { settings:'', data:'' };
+/* Contact config, set from settings.csv on each render. */
+let CONTACT = { email:'', action:'' };
 
 /* Parse the two CSV strings and (re)draw the whole page. */
 function applyData(settingsRaw, dataRaw){
@@ -471,6 +597,72 @@ async function load(){
   }
   applyData(settingsRaw, dataRaw);
   setupLoader();
+  setupContact();
+  setupScrollFX();
+}
+
+/* ---------- Contact modal ---------- */
+function setupContact(){
+  const modal=document.getElementById('modal');
+  const open =()=>{ modal.classList.add('open'); setTimeout(()=>{const f=modal.querySelector('input');f&&f.focus();},120); };
+  const close=()=>{ modal.classList.remove('open'); const n=document.getElementById('formnote'); n.textContent=''; n.classList.remove('ok'); };
+  document.getElementById('contact-open').addEventListener('click',open);
+  document.getElementById('modal-close').addEventListener('click',close);
+  modal.addEventListener('click',e=>{ if(e.target===modal) close(); });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&modal.classList.contains('open')) close(); });
+
+  document.getElementById('contact-form').addEventListener('submit',async e=>{
+    e.preventDefault();
+    const f=e.target, note=document.getElementById('formnote');
+    const d={ first:f.first.value.trim(), last:f.last.value.trim(), email:f.email.value.trim(), message:f.message.value.trim() };
+    if(!d.first||!d.last||!d.email||!d.message){ note.classList.remove('ok'); note.textContent='Please fill in every field.'; return; }
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)){ note.classList.remove('ok'); note.textContent='That email doesn’t look right.'; return; }
+
+    /* Preferred path: a form endpoint (e.g. Formspree) set in settings.csv → sends without leaving the page. */
+    if(CONTACT.action){
+      note.classList.remove('ok'); note.textContent='Sending…';
+      try{
+        const r=await fetch(CONTACT.action,{ method:'POST', headers:{'Accept':'application/json'},
+          body:new FormData(f) });
+        if(!r.ok) throw 0;
+        f.reset(); note.classList.add('ok'); note.textContent='Thank you — your message is on its way.';
+      }catch(err){ note.classList.remove('ok'); note.textContent='Could not send. Please email '+CONTACT.email+' directly.'; }
+      return;
+    }
+    /* Fallback: open the visitor’s mail app addressed to Julie, prefilled. */
+    const subject=encodeURIComponent(`Website enquiry — ${d.first} ${d.last}`);
+    const body=encodeURIComponent(`${d.message}\n\n— ${d.first} ${d.last}\n${d.email}`);
+    window.location.href=`mailto:${CONTACT.email}?subject=${subject}&body=${body}`;
+    note.classList.add('ok'); note.textContent='Opening your email app…';
+  });
+}
+
+/* ---------- Scroll effects: header colour flip + soothing colour drift ---------- */
+function setupScrollFX(){
+  const bar=document.querySelector('header.bar');
+  const footer=document.querySelector('footer');
+  const bg=document.getElementById('bg');
+  let target=0, cur=0, ticking=false;
+
+  function onScroll(){
+    /* header goes light when it overlaps the dark footer */
+    if(footer){
+      const top=footer.getBoundingClientRect().top;
+      bar.classList.toggle('on-dark', top < 64);
+    }
+    /* progress 0→1 drives a gentle hue drift of the background */
+    const max=document.documentElement.scrollHeight - window.innerHeight;
+    target = max>0 ? (window.scrollY/max) : 0;
+    if(!ticking){ ticking=true; requestAnimationFrame(tick); }
+  }
+  function tick(){
+    cur += (target-cur)*0.08;                 // eased follow → very smooth
+    bg.style.setProperty('--hue', (cur*90).toFixed(1)+'deg');   // up to 90° of calm colour shift
+    if(Math.abs(target-cur)>0.001){ requestAnimationFrame(tick); } else { ticking=false; }
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  window.addEventListener('resize',onScroll);
+  onScroll();
 }
 
 /* ============================================================
@@ -524,18 +716,20 @@ function render(S,DATA,sorted){
   /* header */
   document.getElementById('brand').textContent = S.site_title||'';
   document.getElementById('established').textContent = S.established||'';
+  const li=document.getElementById('linkedin');
+  if(S.linkedin_url && S.linkedin_url.trim()){ li.href=S.linkedin_url.trim(); li.hidden=false; } else { li.hidden=true; }
+  CONTACT.email  = S.contact_email||'';
+  CONTACT.action = S.contact_form_action||'';
 
   /* hero */
   document.getElementById('hero-title').innerHTML = accent(S.site_title||'', S.hero_accent);
   document.getElementById('tagline').textContent = S.tagline||'';
   document.getElementById('k-left').textContent = S.kicker_left||'';
-  document.getElementById('k-right').textContent = S.kicker_right||'';
 
   /* years span */
   const dates=DATA.map(d=>d.date).filter(Boolean).sort();
   const yrs = dates.length ? `${dates[0].slice(0,4)}—${dates[dates.length-1].slice(0,4)}` : '';
   document.getElementById('years').textContent = yrs;
-  document.getElementById('footyears').textContent = yrs.replace('—',' — ');
   document.getElementById('k-count').textContent = `№ 01 — ${String(DATA.length).padStart(2,'0')}`;
 
   /* statement */
@@ -565,7 +759,6 @@ function render(S,DATA,sorted){
     </a>`).join(''); };
   renderRows(sorted);
   document.getElementById('count').textContent=String(DATA.length).padStart(2,'0');
-  document.getElementById('footcount').textContent=DATA.length;
 
   const types=[...new Set(DATA.map(d=>d.type).filter(Boolean))];
   const cats=["All",...types];
@@ -587,9 +780,17 @@ function render(S,DATA,sorted){
   document.getElementById('stats').innerHTML=cells.map(([v,c])=>
     `<div class="stat reveal"><div class="n"><em>${String(v).padStart(2,'0')}</em></div><div class="cap mono">${esc(c)}</div></div>`).join('');
 
-  /* footer */
+  /* footer line + colophon (relevant to Julie, not the design) */
   document.getElementById('footer-line').innerHTML = accent(S.footer_line||'', S.footer_accent);
-  document.getElementById('c-subject').innerHTML = esc(S.subject_label||'').replace(/ · /,'<br>');
+  const outletsAll=[...new Set(DATA.map(d=>d.outlet).filter(Boolean))];
+  const featuredIn = outletsAll.slice(0,4).join(' · ');
+  const stack = s => esc(s||'').split(' · ').join('<br>');
+  document.getElementById('colophon').innerHTML = [
+    ['Who', stack(S.subject_label)],
+    ['Focus', stack(S.focus)],
+    ['Featured in', featuredIn ? stack(featuredIn) : '—'],
+    ['Archive', `${DATA.length} entries<br>${yrs.replace('—',' — ')}`]
+  ].map(([l,v])=>`<div><div style="opacity:.5">${l}</div>${v}</div>`).join('');
 
   /* reveal on scroll */
   const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){e.target.classList.add('in'); io.unobserve(e.target);} }),{threshold:0.12});
